@@ -1,10 +1,45 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Flask</title>
+  <meta charset="UTF-8">
+  <title>Cipher Web App</title>
 </head>
 <body>
-    <h1>SUNDA JAWA</h1>
+  <h1>Web-based Encryption & Decryption</h1>
+  <form method="post" enctype="multipart/form-data">
+    <label for="cipher">Cipher:</label>
+    <select name="cipher" required>
+      <option value="vigenere">Vigenere Cipher</option>
+      <option value="autokey_vigenere">Auto-key Vigenere Cipher</option>
+      <option value="extended_vigenere">Extended Vigenere Cipher</option>
+      <option value="affine">Affine Cipher</option>
+      <option value="playfair">Playfair Cipher</option>
+      <option value="hill">Hill Cipher</option>
+    </select><br><br>
+
+    <label for="mode">Mode:</label>
+    <select name="mode">
+      <option value="encrypt">Encrypt</option>
+      <option value="decrypt">Decrypt</option>
+    </select><br><br>
+
+    <label for="key">Key:</label>
+    <input type="text" name="key" required><br><br>
+
+    <label for="text">Text:</label><br>
+    <textarea name="text" rows="5" cols="50"></textarea><br><br>
+
+    <label for="file">Or Upload File:</label>
+    <input type="file" name="file"><br><br>
+
+    <label><input type="checkbox" name="group5"> Group in 5-letter blocks</label><br><br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  {% if result %}
+    <h3>Result:</h3>
+    <textarea rows="10" cols="80">{{ result }}</textarea>
+  {% endif %}
 </body>
 </html>
