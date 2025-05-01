@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, redirect, url_for, session
 import os
 from ciphers import (
     affine, autokey_vigenere, extended_vigenere,
@@ -6,12 +6,12 @@ from ciphers import (
 )
 
 app = Flask(__name__)
+app.secret_key = 'rahasia'  # butuh secret key buat session
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    result = ""
     if request.method == 'POST':
         text_input = request.form.get("text") or ""
         key_input = request.form.get("key") or ""
@@ -31,6 +31,7 @@ def index():
                 with open(output_path, "wb") as f:
                     f.write(result)
                 return send_file(output_path, as_attachment=True)
+
         else:
             text_input = text_input.strip()
 
@@ -51,6 +52,11 @@ def index():
             if group5:
                 result = ' '.join(result[i:i+5] for i in range(0, len(result), 5))
 
+            session['result'] = result  # simpan ke session
+
+        return redirect(url_for("index"))  # redirect ke GET setelah POST
+
+    result = session.pop('result', None)  # ambil result dari session
     return render_template("index.html", result=result)
 
 if __name__ == '__main__':

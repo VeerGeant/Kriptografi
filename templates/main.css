@@ -1,0 +1,82 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #C62E2E, #F95454, #77CDFF, #0D92F4);
+    background-size: 400% 400%;
+    animation: gradientShift 7s ease infinite;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 2.2rem;
+      }
+      form {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        max-width: 650px;
+        margin: 0 auto;
+      }
+      label {
+        display: block;
+        margin: 15px 0 8px;
+        font-weight: 600;
+        color: #555;
+      }
+      select, input[type="text"], textarea, input[type="file"] {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 14px;
+      }
+      button {
+        background: linear-gradient(135deg, #6C63FF, #5DD4FA);
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+        transition: all 0.3s ease;
+      }
+      button:hover {
+        background: linear-gradient(135deg, #5DD4FA, #6C63FF);
+      }
+      .result {
+        background: #f7f9fc;
+        border-left: 5px solid #6C63FF;
+        padding: 20px;
+        margin-top: 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      }
+      .result-content {
+        background-color: #f1f3f7;
+        border: 1px solid #ddd;
+        padding: 12px;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-x: auto;
+        font-size: 14px;
+        color: #333;
+        margin-top: 10px;
+      }
+      input[type="checkbox"] {
+        margin-right: 8px;
+      }

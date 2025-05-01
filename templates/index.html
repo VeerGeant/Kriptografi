@@ -2,12 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cipher Web App</title>
+  <style>
+    body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #C62E2E, #F95454, #77CDFF, #0D92F4);
+  background-size: 400% 400%;
+  animation: gradientShift 7s ease infinite;
+  margin: 0;
+  padding: 20px;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+    }
+    form {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      max-width: 650px;
+      margin: 0 auto;
+    }
+    label {
+      display: block;
+      margin: 15px 0 8px;
+      font-weight: 600;
+      color: #555;
+    }
+    select, input[type="text"], textarea, input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    button {
+      background: linear-gradient(135deg, #6C63FF, #5DD4FA);
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #5DD4FA, #6C63FF);
+    }
+    .result {
+      background: #f7f9fc;
+      border-left: 5px solid #6C63FF;
+      padding: 20px;
+      margin-top: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    }
+    .result-content {
+      background-color: #f1f3f7;
+      border: 1px solid #ddd;
+      padding: 12px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-x: auto;
+      font-size: 14px;
+      color: #333;
+      margin-top: 10px;
+    }
+    input[type="checkbox"] {
+      margin-right: 8px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Web-based Encryption & Decryption</h1>
+  <h1>🛡️ Web-based Cipher App</h1>
   <form method="post" enctype="multipart/form-data">
-    <label for="cipher">Cipher:</label>
+    <label for="cipher">Choose Cipher:</label>
     <select name="cipher" required>
       <option value="vigenere">Vigenere Cipher</option>
       <option value="autokey_vigenere">Auto-key Vigenere Cipher</option>
@@ -15,31 +100,33 @@
       <option value="affine">Affine Cipher</option>
       <option value="playfair">Playfair Cipher</option>
       <option value="hill">Hill Cipher</option>
-    </select><br><br>
+    </select>
 
-    <label for="mode">Mode:</label>
+    <label for="mode">Operation Mode:</label>
     <select name="mode">
       <option value="encrypt">Encrypt</option>
       <option value="decrypt">Decrypt</option>
-    </select><br><br>
+    </select>
 
     <label for="key">Key:</label>
-    <input type="text" name="key" required><br><br>
+    <input type="text" name="key" placeholder="Enter your cipher key..." required>
 
-    <label for="text">Text:</label><br>
-    <textarea name="text" rows="5" cols="50"></textarea><br><br>
+    <label for="text">Text:</label>
+    <textarea name="text" rows="5" placeholder="Type or paste your text here..."></textarea>
 
-    <label for="file">Or Upload File:</label>
-    <input type="file" name="file"><br><br>
+    <label for="file">Or Upload a File:</label>
+    <input type="file" name="file">
 
-    <label><input type="checkbox" name="group5"> Group in 5-letter blocks</label><br><br>
+    <label><input type="checkbox" name="group5"> Group in 5-letter blocks</label>
 
-    <button type="submit">Submit</button>
+    <button type="submit">🚀 Process</button>
+
+    {% if result %}
+      <div class="result">
+        <h3>🔐 Result:</h3>
+        <div class="result-content">{{ result }}</div>
+      </div>
+    {% endif %}
   </form>
-
-  {% if result %}
-    <h3>Result:</h3>
-    <textarea rows="10" cols="80">{{ result }}</textarea>
-  {% endif %}
 </body>
 </html>
