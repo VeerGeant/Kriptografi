@@ -12,6 +12,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    matrix_preview = None  # Inisialisasi matrix_preview di awal
+    
     if request.method == 'POST':
         text_input = request.form.get("text") or ""
         key_input = request.form.get("key") or ""
@@ -19,7 +21,7 @@ def index():
         mode = request.form.get("mode")
         group5 = request.form.get("group5") == "on"
         uploaded_file = request.files.get("file")
-
+        
         if uploaded_file and uploaded_file.filename:
             filepath = os.path.join(UPLOAD_FOLDER, uploaded_file.filename)
             uploaded_file.save(filepath)
@@ -43,7 +45,7 @@ def index():
                 a, b = map(int, key_input.split(','))
                 result = affine.affine_cipher(text_input, a, b, mode)
             elif cipher == "playfair":
-                result = playfair.playfair_cipher(text_input, key_input, mode)
+                result, matrix_preview = playfair.playfair_cipher(text_input, key_input, mode)
             elif cipher == "hill":
                 result = hill.hill_cipher(text_input, key_input, mode, size=3)
             elif cipher == "extended_vigenere":
@@ -53,11 +55,13 @@ def index():
                 result = ' '.join(result[i:i+5] for i in range(0, len(result), 5))
 
             session['result'] = result  # simpan ke session
+            session['matrix_preview'] = matrix_preview  # simpan matrix preview jika Playfair dipilih
 
         return redirect(url_for("index"))  # redirect ke GET setelah POST
 
     result = session.pop('result', None)  # ambil result dari session
-    return render_template("index.html", result=result)
+    matrix_preview = session.pop('matrix_preview', None)  # ambil matrix preview dari session hanya jika Playfair dipilih
+    return render_template("index.html", result=result, matrix_preview=matrix_preview)
 
 if __name__ == '__main__':
     app.run(debug=True)

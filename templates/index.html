@@ -92,6 +92,7 @@
 <body>
   <h1>🛡️ Web-based Cipher App</h1>
   <form method="post" enctype="multipart/form-data">
+    <!-- Form input seperti sebelumnya -->
     <label for="cipher">Choose Cipher:</label>
     <select name="cipher" required>
       <option value="vigenere">Vigenere Cipher</option>
@@ -121,12 +122,31 @@
 
     <button type="submit">🚀 Process</button>
 
+    {% if matrix_preview %}
+    <div class="result">
+      <h3>🔐 Playfair Matrix Preview:</h3>
+      <div class="result-content">
+        <table border="1">
+          {% for row in matrix_preview %}
+            <tr>
+              {% for cell in row %}
+                <td>{{ cell }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  {% endif %}
+
+
     {% if result %}
       <div class="result">
         <h3>🔐 Result:</h3>
         <div class="result-content">{{ result }}</div>
       </div>
     {% endif %}
+    
   </form>
 </body>
 </html>
