@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, send_file, redirect, url_for, session
+import io
 import os
 from ciphers import (
     affine, autokey_vigenere, extended_vigenere,
@@ -6,9 +7,7 @@ from ciphers import (
 )
 
 app = Flask(__name__)
-app.secret_key = 'rahasia'  # butuh secret key buat session
-UPLOAD_FOLDER = 'uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.secret_key = 'rahasia'
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -21,43 +20,60 @@ def index():
         uploaded_file = request.files.get("file")
 
         if uploaded_file and uploaded_file.filename:
-            filepath = os.path.join(UPLOAD_FOLDER, uploaded_file.filename)
-            uploaded_file.save(filepath)
-            if cipher == 'extended_vigenere':
-                with open(filepath, "rb") as f:
-                    file_bytes = f.read()
+            filename = uploaded_file.filename
+            file_ext = os.path.splitext(filename)[1].lower()
+
+            if cipher == 'extended_vigenere' and file_ext != '.txt':
+                file_bytes = uploaded_file.read()
                 result = extended_vigenere.extended_vigenere(file_bytes, key_input, mode)
-                output_path = filepath + ".enc" if mode == "encrypt" else filepath + ".dec"
-                with open(output_path, "wb") as f:
-                    f.write(result)
-                return send_file(output_path, as_attachment=True)
+                return send_file(
+                    io.BytesIO(result),
+                    as_attachment=True,
+                    download_name=filename + (".enc" if mode == "encrypt" else ".dec"),
+                    mimetype="application/octet-stream"
+                )
+            else:
+                text_input = uploaded_file.read().decode("utf-8", errors="ignore")
 
-        else:
-            text_input = text_input.strip()
+        text_input = text_input.strip()
 
-            if cipher == "vigenere":
-                result = vigenere.vigenere_cipher(text_input, key_input, mode)
-            elif cipher == "autokey_vigenere":
-                result = autokey_vigenere.auto_key_vigenere(text_input, key_input, mode)
-            elif cipher == "affine":
-                a, b = map(int, key_input.split(','))
-                result = affine.affine_cipher(text_input, a, b, mode)
-            elif cipher == "playfair":
-                result = playfair.playfair_cipher(text_input, key_input, mode)
-            elif cipher == "hill":
-                result = hill.hill_cipher(text_input, key_input, mode, size=3)
-            elif cipher == "extended_vigenere":
-                result = extended_vigenere.extended_vigenere(text_input.encode(), key_input, mode).decode(errors='ignore')
+        # Proses enkripsi/dekripsi
+        if cipher == "vigenere":
+            result = vigenere.vigenere_cipher(text_input, key_input, mode)
+        elif cipher == "autokey_vigenere":
+            result = autokey_vigenere.auto_key_vigenere(text_input, key_input, mode)
+        elif cipher == "affine":
+            a, b = map(int, key_input.split(','))
+            result = affine.affine_cipher(text_input, a, b, mode)
+        elif cipher == "playfair":
+            result = playfair.playfair_cipher(text_input, key_input, mode)
+        elif cipher == "hill":
+            result = hill.hill_cipher(text_input, key_input, mode, size=3)
+        elif cipher == "extended_vigenere":
+            result = extended_vigenere.extended_vigenere(text_input.encode(), key_input, mode).decode(errors='ignore')
 
-            if group5:
-                result = ' '.join(result[i:i+5] for i in range(0, len(result), 5))
+        # Kelompokkan 5 huruf
+        if group5:
+            result = ' '.join(result[i:i+5] for i in range(0, len(result), 5))
 
-            session['result'] = result  # simpan ke session
+        # Simpan ke session
+        session['cipher'] = cipher
+        session['mode'] = mode
+        session['key'] = key_input
+        session['text'] = text_input
+        session['group5'] = group5
+        session['result'] = result
+        return redirect(url_for("index"))
 
-        return redirect(url_for("index"))  # redirect ke GET setelah POST
+    # Ambil hasil dari session
+    result = session.pop('result', None)
+    cipher = session.pop('cipher', '')
+    mode = session.pop('mode', '')
+    key = session.pop('key', '')
+    text = session.pop('text', '')
+    group5 = session.pop('group5', False)
 
-    result = session.pop('result', None)  # ambil result dari session
-    return render_template("index.html", result=result)
+    return render_template("index.html", result=result, cipher=cipher, mode=mode, key=key, text=text, group5=group5)
 
 if __name__ == '__main__':
     app.run(debug=True)

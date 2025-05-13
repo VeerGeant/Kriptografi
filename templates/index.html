@@ -6,20 +6,18 @@
   <title>Cipher Web App</title>
   <style>
     body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #C62E2E, #F95454, #77CDFF, #0D92F4);
-  background-size: 400% 400%;
-  animation: gradientShift 7s ease infinite;
-  margin: 0;
-  padding: 20px;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #C62E2E, #F95454, #77CDFF, #0D92F4);
+      background-size: 400% 400%;
+      animation: gradientShift 7s ease infinite;
+      margin: 0;
+      padding: 20px;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
     h1 {
       text-align: center;
       color: #333;
@@ -94,30 +92,30 @@
   <form method="post" enctype="multipart/form-data">
     <label for="cipher">Choose Cipher:</label>
     <select name="cipher" required>
-      <option value="vigenere">Vigenere Cipher</option>
-      <option value="autokey_vigenere">Auto-key Vigenere Cipher</option>
-      <option value="extended_vigenere">Extended Vigenere Cipher</option>
-      <option value="affine">Affine Cipher</option>
-      <option value="playfair">Playfair Cipher</option>
-      <option value="hill">Hill Cipher</option>
+      <option value="vigenere" {% if cipher == 'vigenere' %}selected{% endif %}>Vigenere Cipher</option>
+      <option value="autokey_vigenere" {% if cipher == 'autokey_vigenere' %}selected{% endif %}>Auto-key Vigenere Cipher</option>
+      <option value="extended_vigenere" {% if cipher == 'extended_vigenere' %}selected{% endif %}>Extended Vigenere Cipher</option>
+      <option value="affine" {% if cipher == 'affine' %}selected{% endif %}>Affine Cipher</option>
+      <option value="playfair" {% if cipher == 'playfair' %}selected{% endif %}>Playfair Cipher</option>
+      <option value="hill" {% if cipher == 'hill' %}selected{% endif %}>Hill Cipher</option>
     </select>
 
     <label for="mode">Operation Mode:</label>
     <select name="mode">
-      <option value="encrypt">Encrypt</option>
-      <option value="decrypt">Decrypt</option>
+      <option value="encrypt" {% if mode == 'encrypt' %}selected{% endif %}>Encrypt</option>
+      <option value="decrypt" {% if mode == 'decrypt' %}selected{% endif %}>Decrypt</option>
     </select>
 
     <label for="key">Key:</label>
-    <input type="text" name="key" placeholder="Enter your cipher key..." required>
+    <input type="text" name="key" value="{{ key }}" placeholder="Enter your cipher key..." required>
 
     <label for="text">Text:</label>
-    <textarea name="text" rows="5" placeholder="Type or paste your text here..."></textarea>
+    <textarea name="text" rows="5">{{ text }}</textarea>
 
     <label for="file">Or Upload a File:</label>
     <input type="file" name="file">
 
-    <label><input type="checkbox" name="group5"> Group in 5-letter blocks</label>
+    <label><input type="checkbox" name="group5" {% if group5 %}checked{% endif %}> Group in 5-letter blocks</label>
 
     <button type="submit">🚀 Process</button>
 
