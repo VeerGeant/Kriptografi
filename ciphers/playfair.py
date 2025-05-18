@@ -1,64 +1,50 @@
+
 import string
 
-def create_playfair_matrix(key: str):
-    key = ''.join(sorted(set(key), key=lambda x: key.index(x)))  # Hilangkan duplikasi
-    alphabet = string.ascii_uppercase.replace('J', '')  # Menghilangkan 'J' untuk menggantinya dengan 'I'
-    
+def clean_text(text):
+    return ''.join(filter(str.isalpha, text)).upper().replace('J', 'I')
+
+def generate_matrix(key):
+    key = clean_text(key)
+    seen = set()
     matrix = []
-    for char in key:
-        if char not in matrix:
+    for char in key + string.ascii_uppercase:
+        if char not in seen and char != 'J':
+            seen.add(char)
             matrix.append(char)
-    
-    for char in alphabet:
-        if char not in matrix:
-            matrix.append(char)
-    
-    # Membuat matriks 5x5
     return [matrix[i:i+5] for i in range(0, 25, 5)]
 
-def playfair_cipher(text: str, key: str, mode: str):
-    key = key.upper().replace(" ", "")
-    text = text.upper().replace("J", "I").replace(" ", "")  # Gantikan J dengan I
+def find_position(matrix, char):
+    for i, row in enumerate(matrix):
+        if char in row:
+            return i, row.index(char)
 
-    # Membuat Playfair Matrix 5x5
-    matrix = create_playfair_matrix(key)
-
-    # Fungsi untuk menemukan posisi karakter di matriks
-    def find_position(char):
-        for i, row in enumerate(matrix):
-            if char in row:
-                return i, row.index(char)
-        return None  # Jika tidak ditemukan
-
-    # Encrypt atau Decrypt tergantung mode
-    def process_pair(a, b):
-        row_a, col_a = find_position(a)
-        row_b, col_b = find_position(b)
-        
-        if row_a == row_b:
-            return matrix[row_a][(col_a + 1) % 5] + matrix[row_b][(col_b + 1) % 5]
-        elif col_a == col_b:
-            return matrix[(row_a + 1) % 5][col_a] + matrix[(row_b + 1) % 5][col_b]
-        else:
-            return matrix[row_a][col_b] + matrix[row_b][col_a]
-
-    # Membagi teks menjadi pasangan dua karakter
-    pairs = []
+def playfair_cipher(text, key, mode):
+    text = clean_text(text)
+    text = text.replace('J', 'I')
     i = 0
+    pairs = []
     while i < len(text):
-        if i + 1 < len(text) and text[i] != text[i + 1]:
-            pairs.append((text[i], text[i + 1]))
-            i += 2
+        a = text[i]
+        b = text[i + 1] if i + 1 < len(text) and text[i + 1] != a else 'X'
+        pairs.append((a, b))
+        i += 2 if b != 'X' else 1
+
+    matrix = generate_matrix(key)
+    result = ''
+    for a, b in pairs:
+        r1, c1 = find_position(matrix, a)
+        r2, c2 = find_position(matrix, b)
+        if r1 == r2:
+            if mode == 'encrypt':
+                result += matrix[r1][(c1 + 1) % 5] + matrix[r2][(c2 + 1) % 5]
+            else:
+                result += matrix[r1][(c1 - 1) % 5] + matrix[r2][(c2 - 1) % 5]
+        elif c1 == c2:
+            if mode == 'encrypt':
+                result += matrix[(r1 + 1) % 5][c1] + matrix[(r2 + 1) % 5][c2]
+            else:
+                result += matrix[(r1 - 1) % 5][c1] + matrix[(r2 - 1) % 5][c2]
         else:
-            pairs.append((text[i], 'X'))  # Jika ada duplikasi, tambahkan 'X'
-            i += 1
-
-    result = ""
-    for pair in pairs:
-        a, b = pair
-        if mode == "encrypt":
-            result += process_pair(a, b)
-        elif mode == "decrypt":
-            result += process_pair(a, b)
-
-    return result, matrix  # Kembalikan hasil dan matrix untuk preview
+            result += matrix[r1][c2] + matrix[r2][c1]
+    return result

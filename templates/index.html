@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cipher Web App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Web-based Cipher App</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -24,13 +24,22 @@
       margin-bottom: 30px;
       font-size: 2.2rem;
     }
+
+    .form-container {
+      display: flex;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
     form {
       background: #ffffff;
       padding: 25px;
       border-radius: 12px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-      max-width: 650px;
-      margin: 0 auto;
+      flex: 1; /* supaya sama lebar */
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
     }
     label {
       display: block;
@@ -54,9 +63,9 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      width: 100%;
       font-size: 16px;
       transition: all 0.3s ease;
+      margin-top: auto; /* dorong ke bawah */
     }
     button:hover {
       background: linear-gradient(135deg, #5DD4FA, #6C63FF);
@@ -65,9 +74,11 @@
       background: #f7f9fc;
       border-left: 5px solid #6C63FF;
       padding: 20px;
-      margin-top: 25px;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      flex-grow: 1;
+      overflow-y: auto;
+      max-height: 300px;
     }
     .result-content {
       background-color: #f1f3f7;
@@ -81,50 +92,129 @@
       font-size: 14px;
       color: #333;
       margin-top: 10px;
+      height: 100%;
     }
     input[type="checkbox"] {
       margin-right: 8px;
+    }
+    a.btn-download {
+      display: inline-block;
+      margin-top: 10px;
+      background: #6C63FF;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 6px;
+      text-decoration: none;
+      text-align: center;
+      font-weight: 600;
+    }
+    a.btn-download:hover {
+      background: #5DD4FA;
+      color: #222;
     }
   </style>
 </head>
 <body>
   <h1>🛡️ Web-based Cipher App</h1>
-  <form method="post" enctype="multipart/form-data">
-    <label for="cipher">Choose Cipher:</label>
-    <select name="cipher" required>
-      <option value="vigenere" {% if cipher == 'vigenere' %}selected{% endif %}>Vigenere Cipher</option>
-      <option value="autokey_vigenere" {% if cipher == 'autokey_vigenere' %}selected{% endif %}>Auto-key Vigenere Cipher</option>
-      <option value="extended_vigenere" {% if cipher == 'extended_vigenere' %}selected{% endif %}>Extended Vigenere Cipher</option>
-      <option value="affine" {% if cipher == 'affine' %}selected{% endif %}>Affine Cipher</option>
-      <option value="playfair" {% if cipher == 'playfair' %}selected{% endif %}>Playfair Cipher</option>
-      <option value="hill" {% if cipher == 'hill' %}selected{% endif %}>Hill Cipher</option>
-    </select>
 
-    <label for="mode">Operation Mode:</label>
-    <select name="mode">
-      <option value="encrypt" {% if mode == 'encrypt' %}selected{% endif %}>Encrypt</option>
-      <option value="decrypt" {% if mode == 'decrypt' %}selected{% endif %}>Decrypt</option>
-    </select>
+  <div class="form-container" style="padding: 50px;">
+    <!-- Form 1: Text & File input -->
+    <form id="form1" enctype="multipart/form-data">
+      <label for="text">Plaintext:</label>
+      <textarea name="text" rows="8" form="form-main">{{ text }}</textarea>
 
-    <label for="key">Key:</label>
-    <input type="text" name="key" value="{{ key }}" placeholder="Enter your cipher key..." required>
+      <label for="file">Or Upload a File:</label>
+      <input type="file" name="file" form="form-main" />
+    </form>
 
-    <label for="text">Text:</label>
-    <textarea name="text" rows="5">{{ text }}</textarea>
+    <!-- Form 2: Cipher, Mode, Key, Checkbox, Submit -->
+    <form id="form2" onsubmit="submitCombinedForm(event)">
+      <label for="cipher">Choose Cipher:</label>
+      <select name="cipher" form="form-main" required>
+        <option value="vigenere" {% if cipher == 'vigenere' %}selected{% endif %}>Vigenere Cipher</option>
+        <option value="autokey_vigenere" {% if cipher == 'autokey_vigenere' %}selected{% endif %}>Auto-key Vigenere Cipher</option>
+        <option value="extended_vigenere" {% if cipher == 'extended_vigenere' %}selected{% endif %}>Extended Vigenere Cipher</option>
+        <option value="affine" {% if cipher == 'affine' %}selected{% endif %}>Affine Cipher</option>
+        <option value="playfair" {% if cipher == 'playfair' %}selected{% endif %}>Playfair Cipher</option>
+        <option value="hill" {% if cipher == 'hill' %}selected{% endif %}>Hill Cipher</option>
+      </select>
 
-    <label for="file">Or Upload a File:</label>
-    <input type="file" name="file">
+      <label for="mode">Operation Mode:</label>
+      <select name="mode" form="form-main">
+        <option value="encrypt" {% if mode == 'encrypt' %}selected{% endif %}>Encrypt</option>
+        <option value="decrypt" {% if mode == 'decrypt' %}selected{% endif %}>Decrypt</option>
+      </select>
 
-    <label><input type="checkbox" name="group5" {% if group5 %}checked{% endif %}> Group in 5-letter blocks</label>
+      <label for="key">Key:</label>
+      <input type="text" name="key" placeholder="Enter your cipher key..." value="{{ key }}" form="form-main" required>
 
-    <button type="submit">🚀 Process</button>
+      <label><input type="checkbox" name="group5" form="form-main" {% if group5 %}checked{% endif %}> Group in 5-letter blocks</label>
 
-    {% if result %}
+      <button type="submit">🚀 Process</button>
+    </form>
+
+    <!-- Form 3: Result & Download -->
+    <form id="form3">
+      {% if result %}
       <div class="result">
-        <h3>🔐 Result:</h3>
-        <div class="result-content">{{ result }}</div>
+        <h3>🔐 Ciphertext:</h3>
+        <textarea readonly rows="8" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 14px; resize: vertical;">{{ result }}</textarea>
+        <a href="{{ url_for('download_result') }}" class="btn-download">
+          Simpan File
+        </a>
       </div>
-    {% endif %}
-  </form>
+      {% else %}
+      <div class="result" style="display: flex; align-items: center; justify-content: center; color: #999; font-style: italic;">
+        Hasil akan muncul di sini setelah proses.
+      </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <script>
+    function submitCombinedForm(event) {
+      event.preventDefault();
+
+      // Create a FormData object
+      const formMain = new FormData();
+
+      // Get elements from form1
+      const textArea = document.querySelector('textarea[name="text"]');
+      if(textArea) formMain.append('text', textArea.value);
+
+      const fileInput = document.querySelector('input[type="file"][name="file"]');
+      if(fileInput && fileInput.files.length > 0) {
+        formMain.append('file', fileInput.files[0]);
+      }
+
+      // Get elements from form2
+      const cipher = document.querySelector('select[name="cipher"]');
+      if(cipher) formMain.append('cipher', cipher.value);
+
+      const mode = document.querySelector('select[name="mode"]');
+      if(mode) formMain.append('mode', mode.value);
+
+      const key = document.querySelector('input[name="key"]');
+      if(key) formMain.append('key', key.value);
+
+      const group5 = document.querySelector('input[type="checkbox"][name="group5"]');
+      if(group5 && group5.checked) {
+        formMain.append('group5', 'on');
+      }
+
+      // Submit using fetch or XMLHttpRequest to your server (adjust URL)
+      fetch(window.location.href, {
+        method: 'POST',
+        body: formMain,
+      })
+      .then(response => response.text())
+      .then(html => {
+        // Replace current page content or parse result
+        // Simplest: reload page to update result
+        location.reload();
+      })
+      .catch(err => alert('Error submitting form: ' + err));
+    }
+  </script>
 </body>
 </html>
